@@ -7,6 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <KKHttp/KKJSHttp.h>
+#import <JavaScriptCore/JavaScriptCore.h>
 
 extern NSString * KKHttpOptionsTypeText;
 extern NSString * KKHttpOptionsTypeJSON;
@@ -63,7 +65,7 @@ typedef void (^KKHttpOnProcess)(long long value, long long maxValue,id weakObjec
 
 @end
 
-@protocol KKHttpTask <NSObject>
+@protocol KKHttpTask <JSExport>
 
 -(void) cancel;
 
@@ -85,6 +87,8 @@ typedef void (^KKHttpOnProcess)(long long value, long long maxValue,id weakObjec
 @protocol KKHttp<NSObject>
 
 -(id<KKHttpTask>) send:(KKHttpOptions *) options weakObject:(id) weakObject ;
+
+-(void) cancel:(id) weakObject;
 
 @end
 

@@ -582,8 +582,8 @@ static NSString * KKHttpBodyUrlencodedType = @"application/x-www-form-urlencoded
         
         NSURLRequest * req = [options request];
         
-        NSLog(@"[KKHttp] %@",[[req URL] absoluteString]);
-        NSLog(@"[KKHttp] %@",options.data);
+        NSLog(@"[KK] %@",[[req URL] absoluteString]);
+        NSLog(@"[KK] %@",options.data);
         
         NSURLSessionTask * sessionTask = [_session dataTaskWithRequest:req];
         

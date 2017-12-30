@@ -24,6 +24,8 @@
 /* Begin PBXBuildFile section */
 		1ACF734D1FF0FFDB003FB42A /* KKHttp.m in Sources */ = {isa = PBXBuildFile; fileRef = 1ACF734B1FF0FFDB003FB42A /* KKHttp.m */; };
 		1ACF734F1FF10005003FB42A /* KKHttp.h in Headers */ = {isa = PBXBuildFile; fileRef = 1ACF734E1FF10005003FB42A /* KKHttp.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		1ACF74231FF377F8003FB42A /* KKJSHttp.h in Headers */ = {isa = PBXBuildFile; fileRef = 1ACF74211FF377F8003FB42A /* KKJSHttp.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		1ACF74241FF377F8003FB42A /* KKJSHttp.m in Sources */ = {isa = PBXBuildFile; fileRef = 1ACF74221FF377F8003FB42A /* KKJSHttp.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -41,6 +43,8 @@
 		1ACF73431FF0FFBE003FB42A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1ACF734B1FF0FFDB003FB42A /* KKHttp.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KKHttp.m; sourceTree = "<group>"; };
 		1ACF734E1FF10005003FB42A /* KKHttp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KKHttp.h; sourceTree = "<group>"; };
+		1ACF74211FF377F8003FB42A /* KKJSHttp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KKJSHttp.h; sourceTree = "<group>"; };
+		1ACF74221FF377F8003FB42A /* KKJSHttp.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KKJSHttp.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,6 +80,8 @@
 				1ACF734E1FF10005003FB42A /* KKHttp.h */,
 				1ACF734B1FF0FFDB003FB42A /* KKHttp.m */,
 				1ACF73431FF0FFBE003FB42A /* Info.plist */,
+				1ACF74211FF377F8003FB42A /* KKJSHttp.h */,
+				1ACF74221FF377F8003FB42A /* KKJSHttp.m */,
 			);
 			path = KKHttp;
 			sourceTree = "<group>";
@@ -88,6 +94,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1ACF734F1FF10005003FB42A /* KKHttp.h in Headers */,
+				1ACF74231FF377F8003FB42A /* KKJSHttp.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -119,7 +126,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0920;
-				ORGANIZATIONNAME = mofang.cn;
+				ORGANIZATIONNAME = kkmofang.cn;
 				TargetAttributes = {
 					1ACF733E1FF0FFBE003FB42A = {
 						CreatedOnToolsVersion = 9.2;
@@ -180,6 +187,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1ACF74241FF377F8003FB42A /* KKJSHttp.m in Sources */,
 				1ACF734D1FF0FFDB003FB42A /* KKHttp.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -312,11 +320,13 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEAD_CODE_STRIPPING = NO;
 				DEFINES_MODULE = YES;
+				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = KKHttp/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LINK_WITH_STANDARD_LIBRARIES = NO;
 				MACH_O_TYPE = staticlib;
+				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = cn.mofang.KKHttp;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
@@ -331,11 +341,13 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEAD_CODE_STRIPPING = NO;
 				DEFINES_MODULE = YES;
+				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = KKHttp/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LINK_WITH_STANDARD_LIBRARIES = NO;
 				MACH_O_TYPE = staticlib;
+				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = cn.mofang.KKHttp;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;

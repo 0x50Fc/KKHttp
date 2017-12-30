@@ -7,6 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <KKHttp/KKJSHttp.h>
+#import <JavaScriptCore/JavaScriptCore.h>
 
 extern NSString * KKHttpOptionsTypeText;
 extern NSString * KKHttpOptionsTypeJSON;
@@ -63,7 +65,13 @@ typedef void (^KKHttpOnProcess)(long long value, long long maxValue,id weakObjec
 
 @end
 
-@interface KKHttpTask : NSObject {
+@protocol KKHttpTask <JSExport>
+
+-(void) cancel;
+
+@end
+
+@interface KKHttpTask : NSObject<KKHttpTask> {
     
 }
     
@@ -76,7 +84,15 @@ typedef void (^KKHttpOnProcess)(long long value, long long maxValue,id weakObjec
     
 @end
 
-@interface KKHttp : NSObject
+@protocol KKHttp<NSObject>
+
+-(id<KKHttpTask>) send:(KKHttpOptions *) options weakObject:(id) weakObject ;
+
+-(void) cancel:(id) weakObject;
+
+@end
+
+@interface KKHttp : NSObject<KKHttp>
 
 @property(nonatomic,strong,readonly) dispatch_queue_t io;
 @property(nonatomic,strong,readonly) NSURLSession * session;
@@ -85,15 +101,15 @@ typedef void (^KKHttpOnProcess)(long long value, long long maxValue,id weakObjec
     
 -(instancetype) initWithConfiguration:(NSURLSessionConfiguration *) configuration;
     
--(KKHttpTask *) send:(KKHttpOptions *) options weakObject:(id) weakObject ;
+-(id<KKHttpTask>) send:(KKHttpOptions *) options weakObject:(id) weakObject ;
 
--(KKHttpTask *) get:(NSString *) url data:(id) data type:(NSString *) type onload:(KKHttpOnLoad) onload onfail:(KKHttpOnFail) onfail weakObject:(id) weakObject;
+-(id<KKHttpTask>) get:(NSString *) url data:(id) data type:(NSString *) type onload:(KKHttpOnLoad) onload onfail:(KKHttpOnFail) onfail weakObject:(id) weakObject;
     
--(KKHttpTask *) post:(NSString *) url data:(id) data type:(NSString *) type onload:(KKHttpOnLoad) onload onfail:(KKHttpOnFail) onfail weakObject:(id) weakObject;
+-(id<KKHttpTask>) post:(NSString *) url data:(id) data type:(NSString *) type onload:(KKHttpOnLoad) onload onfail:(KKHttpOnFail) onfail weakObject:(id) weakObject;
   
 -(void) cancel:(id) weakObject;
     
-+(KKHttp *) main;
++(id<KKHttp>) main;
 
 +(UIImage *) imageWithURL:(NSString *) url;
 
