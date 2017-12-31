@@ -3,7 +3,7 @@ Pod::Spec.new do |s|
 
 
   s.name         = "KKHttp"
-  s.version      = "1.0.0"
+  s.version      = "1.0.1"
   s.summary      = "HTTP"
   s.description  = "HTTP, 支持 JavascriptCore"
 
@@ -13,7 +13,7 @@ Pod::Spec.new do |s|
   s.platform     = :ios, "8.0"
   s.source       = { :git => "https://github.com/hailongz/KKHttp.git", :tag => "#{s.version}" }
 
-  s.vendored_frameworks = 'KKhttp.framework'
+  s.vendored_frameworks = 'KKHttp.framework'
   s.requires_arc = true
 
 end
