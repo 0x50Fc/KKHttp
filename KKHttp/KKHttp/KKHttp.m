@@ -7,7 +7,7 @@
 //
 
 #import "KKHttp.h"
-
+#import <TargetConditionals.h>
 #import <CommonCrypto/CommonCrypto.h>
 
 NSString * KKHttpOptionsTypeText = @"text";
@@ -30,6 +30,7 @@ NSString * KKHttpOptionsPOST = @"POST";
             self.type = KKHttpOptionsTypeText;
             self.headers = [NSMutableDictionary dictionaryWithCapacity:4];
             self.timeout = 30;
+            [self.headers setValue:[KKHttp userAgent] forKey:@"User-Agent"];
         }
         return self;
     }
@@ -515,7 +516,7 @@ static NSString * KKHttpBodyUrlencodedType = @"application/x-www-form-urlencoded
     @synthesize tasksWithIdentity = _tasksWithIdentity;
     @synthesize sessionTasks = _sessionTasks;
     @synthesize responsesWithIdentity = _responsesWithIdentity;
-    
+
     -(void) onInit {
         _io = dispatch_queue_create("com.ziyouker.KKHttp.IO", nil);
     }
@@ -583,7 +584,9 @@ static NSString * KKHttpBodyUrlencodedType = @"application/x-www-form-urlencoded
         NSURLRequest * req = [options request];
         
         NSLog(@"[KK] %@",[[req URL] absoluteString]);
-        NSLog(@"[KK] %@",options.data);
+        if(options.data) {
+            NSLog(@"[KK] %@",options.data);
+        }
         
         NSURLSessionTask * sessionTask = [_session dataTaskWithRequest:req];
         
@@ -894,6 +897,23 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend {
         }
         
         return defaultValue;
+    }
+
+    static NSString * gUserAgent = nil;
+
+    +(NSString *) userAgent {
+        if(gUserAgent == nil) {
+            UIWebView *webView = [[UIWebView alloc] initWithFrame:CGRectZero];
+            gUserAgent = [webView stringByEvaluatingJavaScriptFromString:@"navigator.userAgent"];
+#if TARGET_IPHONE_SIMULATOR==1
+            gUserAgent = [gUserAgent stringByAppendingString:@" Simulator"];
+#endif
+        }
+        return gUserAgent;
+    }
+
+    +(void) setUserAgent:(NSString *)userAgent {
+        gUserAgent = userAgent;
     }
     
 @end
