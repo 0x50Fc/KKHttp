@@ -29,7 +29,7 @@ NSString * KKHttpOptionsPOST = @"POST";
             self.method = KKHttpOptionsGET;
             self.type = KKHttpOptionsTypeText;
             self.headers = [NSMutableDictionary dictionaryWithCapacity:4];
-            self.timeout = 30;
+            self.timeout = 300;
             [self.headers setValue:[KKHttp userAgent] forKey:@"User-Agent"];
         }
         return self;
@@ -332,7 +332,6 @@ static NSString * KKHttpBodyUrlencodedType = @"application/x-www-form-urlencoded
 @end
 
 @interface KKHttp() <NSURLSessionDelegate,NSURLSessionDataDelegate>  {
-    dispatch_queue_t _io;
 }
     
     @property(nonatomic,strong,readonly) NSMutableDictionary * identitysWithKey;
@@ -510,7 +509,6 @@ static NSString * KKHttpBodyUrlencodedType = @"application/x-www-form-urlencoded
 
 @implementation KKHttp
 
-    @synthesize io = _io;
     @synthesize session = _session;
     @synthesize identitysWithKey = _identitysWithKey;
     @synthesize tasksWithIdentity = _tasksWithIdentity;
@@ -518,7 +516,7 @@ static NSString * KKHttpBodyUrlencodedType = @"application/x-www-form-urlencoded
     @synthesize responsesWithIdentity = _responsesWithIdentity;
 
     -(void) onInit {
-        _io = dispatch_queue_create("com.ziyouker.KKHttp.IO", nil);
+        
     }
     
     -(instancetype) init {
@@ -757,7 +755,7 @@ willPerformHTTPRedirection:(NSHTTPURLResponse *)response
             
             if([r isBackground]) {
                 
-                dispatch_async(_io, ^{
+                dispatch_async(KKHttpIODispatchQueue(), ^{
                     [r onData:data];
                 });
             } else {
@@ -825,7 +823,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend {
                 
                 NSOperationQueue * q = session.delegateQueue;
                 
-                dispatch_async(_io, ^{
+                dispatch_async(KKHttpIODispatchQueue(), ^{
                     
                     if(error == nil) {
                         [r onLoad];
@@ -881,6 +879,22 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend {
     +(UIImage *) imageWithURL:(NSString *) url {
         return [UIImage imageNamed:[KKHttpOptions cachePathWithURL:url]];
     }
+    
+    +(BOOL) imageWithURL:(NSString *) url callback:(KKHttpImageCallback) callback {
+        NSString * path = [KKHttpOptions cachePathWithURL:url];
+        if([[NSFileManager defaultManager] fileExistsAtPath:path]) {
+            if(callback) {
+                dispatch_async(KKHttpIODispatchQueue(), ^{
+                    UIImage * image = [UIImage imageNamed:path];
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        callback(image);
+                    });
+                });
+            }
+            return YES;
+        }
+        return NO;
+    }
 
     +(NSString *) stringValue:(id) value defaultValue:(NSString *) defaultValue {
         
@@ -917,3 +931,12 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend {
     }
     
 @end
+
+dispatch_queue_t KKHttpIODispatchQueue() {
+    static dispatch_queue_t v = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        v = dispatch_queue_create("com.kkmofang.KKHttp.IO", nil);
+    });
+    return v;
+}
