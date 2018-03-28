@@ -98,7 +98,7 @@ NSString * KKHttpOptionsPOST = @"POST";
                     }
                     [query appendString:key];
                     [query appendString:@"="];
-                    [query appendString:[v stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]];
+                    [query appendString:[KKHttpOptions encodeURL:v]];
                 }
                 if( [self.url hasSuffix:@"?"]) {
                     _absoluteUrl = [NSString stringWithFormat:@"%@%@",self.url,query];
@@ -183,6 +183,17 @@ NSString * KKHttpOptionsPOST = @"POST";
         }
         
         return nil;
+    }
+
+    +(NSString *) encodeURL:(NSString *) url {
+        
+        if(url == nil) {
+            return nil;
+        }
+        
+        CFStringRef v = CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault, (__bridge CFStringRef) url, nil, CFSTR(":/?&=;+!@#$()',*"), kCFStringEncodingUTF8);
+        
+        return CFBridgingRelease((CFTypeRef) v);
     }
     
 @end
@@ -319,7 +330,7 @@ static NSString * KKHttpBodyUrlencodedType = @"application/x-www-form-urlencoded
                     }
                     [mdata appendData:[v.key dataUsingEncoding:NSUTF8StringEncoding]];
                     [mdata appendBytes:"=" length:1];
-                    [mdata appendData:[[v.value stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]] dataUsingEncoding:NSUTF8StringEncoding]];
+                    [mdata appendData:[[KKHttpOptions encodeURL:v.value] dataUsingEncoding:NSUTF8StringEncoding]];
                 }
             }
         }

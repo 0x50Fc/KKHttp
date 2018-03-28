@@ -25,6 +25,11 @@
     [_http cancel:self];
 }
 
+-(void) recycle {
+    [_http cancel:self];
+    _http = nil;
+}
+
 -(id<KKHttpTask>) send:(JSValue *) options {
     
     KKHttpOptions * opt = [[KKHttpOptions alloc] init];

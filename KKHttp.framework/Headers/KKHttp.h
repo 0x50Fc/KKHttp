@@ -50,7 +50,9 @@ typedef void (^KKHttpOnProcess)(long long value, long long maxValue,id weakObjec
 +(NSString *) cacheKeyWithURL:(NSString *) url;
 +(NSString *) cachePathWithURL:(NSString *) url;
 +(NSString *) cacheTmpPathWithURL:(NSString *) url;
-    
+
++(NSString *) encodeURL:(NSString *) url;
+
 @end
 
 @interface KKHttpBody : NSObject {
