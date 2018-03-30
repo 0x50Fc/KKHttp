@@ -193,7 +193,7 @@ NSString * KKHttpOptionsPOST = @"POST";
         
         CFStringRef v = CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault, (__bridge CFStringRef) url, nil, CFSTR(":/?&=;+!@#$()',*"), kCFStringEncodingUTF8);
         
-        return CFBridgingRelease((CFTypeRef) v);
+        return CFBridgingRelease(v);
     }
     
 @end
