@@ -454,6 +454,11 @@ static NSString * KKHttpBodyUrlencodedType = @"application/x-www-form-urlencoded
                 if(fd != NULL){
                     fclose(fd);
                 }
+            } else if(response.statusCode == 200) {
+                FILE * fd = fopen([_tmppath UTF8String], "wb");
+                if(fd != NULL){
+                    fclose(fd);
+                }
             }
         } else {
             _data = [NSMutableData dataWithCapacity:64];
