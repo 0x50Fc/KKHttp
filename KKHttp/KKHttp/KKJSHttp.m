@@ -48,33 +48,55 @@
     
     __strong JSValue * onload = [options valueForProperty:@"onload"];
     __strong JSValue * onfail = [options valueForProperty:@"onfail"];
+    __strong JSValue * onresponse = [options valueForProperty:@"onresponse"];
 
-    opt.onload = ^(id data, NSError * error, id weakObject) {
-        if(error) {
-            
-            NSArray * arguments = @[[JSValue valueWithNullInContext:onload.context],[error localizedDescription]];
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [onload callWithArguments:arguments];
-            });
-            
-            
-        } else {
-            
-            NSArray * arguments = @[data];
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [onload callWithArguments:arguments];
-            });
-        }
-    };
+    if([onload isObject]) {
+        
+        opt.onload = ^(id data, NSError * error, id weakObject) {
+            if(error) {
+                
+                NSArray * arguments = @[[JSValue valueWithNullInContext:onload.context],[error localizedDescription]];
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [onload callWithArguments:arguments];
+                });
+                
+                
+            } else {
+                
+                NSArray * arguments = @[data];
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [onload callWithArguments:arguments];
+                });
+            }
+        };
     
-    opt.onfail = ^(NSError *error, id weakObject) {
-        NSArray * arguments = @[[error localizedDescription]];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [onfail callWithArguments:arguments];
-        });
-    };
+    }
+    
+    if([onfail isObject]) {
+        opt.onfail = ^(NSError *error, id weakObject) {
+            NSArray * arguments = @[[error localizedDescription]];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [onfail callWithArguments:arguments];
+            });
+        };
+    }
+    
+    if([onresponse isObject]) {
+        
+        opt.onresponse = ^(NSHTTPURLResponse *response, id weakObject) {
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                NSMutableDictionary * data = [NSMutableDictionary dictionaryWithCapacity:4];
+                data[@"code"] = @(response.statusCode);
+                data[@"status"] = [NSHTTPURLResponse localizedStringForStatusCode:response.statusCode];
+                data[@"headers"] = [response allHeaderFields];
+                [onresponse callWithArguments:@[data]];
+            });
+            
+        };
+    }
     
     return [_http send:opt weakObject:self];
 }
