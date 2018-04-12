@@ -30,13 +30,21 @@
     _http = nil;
 }
 
++(NSString *) kk_getString:(JSValue *) object key:(NSString *) key {
+    JSValue * v = [object valueForProperty:key];
+    if([v isNull] || [v isUndefined] ){
+        return nil;
+    }
+    return [v toString];
+}
+
 -(id<KKHttpTask>) send:(JSValue *) options {
     
     KKHttpOptions * opt = [[KKHttpOptions alloc] init];
     
-    opt.url = [[options valueForProperty:@"url"] toString];
-    opt.method = [[options valueForProperty:@"method"] toString];
-    opt.type = [[options valueForProperty:@"type"] toString];
+    opt.url = [KKJSHttp kk_getString:options key:@"url"];
+    opt.method = [KKJSHttp kk_getString:options key:@"method"];
+    opt.type = [KKJSHttp kk_getString:options key:@"type"];
     {
         id v = [[options valueForProperty:@"headers"] toDictionary];
         if(v) {
@@ -45,6 +53,7 @@
     }
     opt.data = [[options valueForProperty:@"data"] toDictionary];
     opt.timeout = [[options valueForProperty:@"timeout"] toDouble];
+    opt.host = [KKJSHttp kk_getString:options key:@"host"];
     
     __strong JSValue * onload = [options valueForProperty:@"onload"];
     __strong JSValue * onfail = [options valueForProperty:@"onfail"];

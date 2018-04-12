@@ -598,6 +598,7 @@ static NSString * KKHttpBodyUrlencodedType = @"application/x-www-form-urlencoded
         NSURLRequest * req = [options request];
         
         NSLog(@"[KK] %@",[[req URL] absoluteString]);
+        
         if(options.data) {
             NSLog(@"[KK] %@",options.data);
         }

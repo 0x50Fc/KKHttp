@@ -34,6 +34,7 @@ typedef void (^KKHttpOnProcess)(long long value, long long maxValue,id weakObjec
 @property(nonatomic,strong) NSMutableDictionary * headers;
 @property(nonatomic,strong) NSString * type;
 @property(nonatomic,assign) NSTimeInterval timeout;
+@property(nonatomic,strong) NSString * host;    //代理主机
 
 @property(nonatomic,copy) KKHttpOnLoad onload;
 @property(nonatomic,copy) KKHttpOnFail onfail;
