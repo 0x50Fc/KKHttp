@@ -54,6 +54,8 @@ typedef void (^KKHttpOnProcess)(long long value, long long maxValue,id weakObjec
 
 +(NSString *) encodeURL:(NSString *) url;
 
++(NSString *) decodeURL:(NSString *) url;
+
 @end
 
 @interface KKHttpBody : NSObject {
