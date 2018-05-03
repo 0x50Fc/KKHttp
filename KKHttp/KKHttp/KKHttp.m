@@ -9,6 +9,7 @@
 #import "KKHttp.h"
 #import <TargetConditionals.h>
 #import <CommonCrypto/CommonCrypto.h>
+#import <ImageIO/ImageIO.h>
 
 NSString * KKHttpOptionsTypeText = @"text";
 NSString * KKHttpOptionsTypeJSON = @"json";
@@ -18,6 +19,40 @@ NSString * KKHttpOptionsTypeImage = @"image";
 
 NSString * KKHttpOptionsGET = @"GET";
 NSString * KKHttpOptionsPOST = @"POST";
+
+@interface UIImage(KKHttp)
+
++(UIImage *) kk_imageWithPath:(NSString *) path;
+
+@end
+
+@implementation UIImage(KKHttp)
+
++(UIImage *) kk_imageWithPath:(NSString *) path {
+    UIImage * image = [UIImage imageNamed:path];
+    
+    if(image == nil) {
+        
+        CGImageSourceRef source = CGImageSourceCreateWithURL((__bridge CFURLRef)[NSURL fileURLWithPath:path], nil);
+        
+        if(source) {
+            
+            CGImageRef i = CGImageSourceCreateImageAtIndex(source, 0, nil);
+            
+            if(i) {
+                image = [UIImage imageWithCGImage:i];
+                
+                CFRelease(i);
+            }
+            
+            CFRelease(source);
+        }
+    }
+    
+    return image;
+}
+
+@end
 
 @implementation KKHttpOptions
     
@@ -414,7 +449,8 @@ static NSString * KKHttpBodyUrlencodedType = @"application/x-www-form-urlencoded
     @property(nonatomic,strong,readonly) id body;
     @property(nonatomic,strong,readonly) NSError * error;
     @property(nonatomic,assign,readonly,getter=isBackground) BOOL background;
-    
+    @property(nonatomic,strong) NSString * contentType;
+
     -(instancetype) initWithOptions:(KKHttpOptions *) options;
     
     -(void) onResponse:(NSHTTPURLResponse *) response;
@@ -452,8 +488,8 @@ static NSString * KKHttpBodyUrlencodedType = @"application/x-www-form-urlencoded
     
     -(void) onResponse:(NSHTTPURLResponse *) response {
         _maxValue = [response expectedContentLength];
-        NSString * contentType = [[[response allHeaderFields] valueForKey:@"Content-Type"] lowercaseString];
-        if([contentType containsString:@"charset=gbk"] || [contentType containsString:@"charset=gb2312"]) {
+        self.contentType = [[[response allHeaderFields] valueForKey:@"Content-Type"] lowercaseString];
+        if([self.contentType containsString:@"charset=gbk"] || [self.contentType containsString:@"charset=gb2312"]) {
             _encoding = CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingGBK_95);
         }
         if(_key != nil) {
@@ -514,7 +550,7 @@ static NSString * KKHttpBodyUrlencodedType = @"application/x-www-form-urlencoded
                 _body = _path;
             }
             else if([_options.type isEqualToString:KKHttpOptionsTypeImage]) {
-                _body = [UIImage imageNamed:_path];
+                _body = [UIImage kk_imageWithPath:_path];
             }
         } else if([_options.type isEqualToString:KKHttpOptionsTypeJSON]) {
             NSError * e = nil;
@@ -905,7 +941,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend {
     }
 
     +(UIImage *) imageWithURL:(NSString *) url {
-        return [UIImage imageNamed:[KKHttpOptions cachePathWithURL:url]];
+        return [UIImage kk_imageWithPath:[KKHttpOptions cachePathWithURL:url]];
     }
     
     +(BOOL) imageWithURL:(NSString *) url callback:(KKHttpImageCallback) callback {
@@ -913,7 +949,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend {
         if([[NSFileManager defaultManager] fileExistsAtPath:path]) {
             if(callback) {
                 dispatch_async(KKHttpIODispatchQueue(), ^{
-                    UIImage * image = [UIImage imageNamed:path];
+                    UIImage * image = [UIImage kk_imageWithPath:path];
                     dispatch_async(dispatch_get_main_queue(), ^{
                         callback(image);
                     });
