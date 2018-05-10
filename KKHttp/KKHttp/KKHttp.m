@@ -151,6 +151,9 @@ NSString * KKHttpOptionsPOST = @"POST";
     
     -(NSURLRequest *) request {
         NSURL * u = [NSURL URLWithString:self.absoluteUrl];
+        if(u == nil) {
+            u = [NSURL URLWithString:[self.absoluteUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+        }
         if(u != nil) {
             
             NSMutableURLRequest * req = [NSMutableURLRequest requestWithURL:u cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:self.timeout];
@@ -213,8 +216,6 @@ NSString * KKHttpOptionsPOST = @"POST";
             
             return req;
             
-        } else {
-            @throw [NSException exceptionWithName:@"KKHttp" reason:@"URL Fail" userInfo:nil];
         }
         
         return nil;
@@ -644,6 +645,22 @@ static NSString * KKHttpBodyUrlencodedType = @"application/x-www-form-urlencoded
         
         NSURLRequest * req = [options request];
         
+        if(req == nil) {
+            
+            NSLog(@"[KK] URL Error: %@",options.absoluteUrl);
+            
+            if(options.onfail) {
+                
+                __weak id vObject = weakObject;
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    options.onfail([NSError errorWithDomain:@"KKHttp" code:-300 userInfo:@{NSLocalizedDescriptionKey:options.absoluteUrl}], vObject);
+                });
+            }
+            
+            return nil;
+        }
+        
         NSLog(@"[KK] %@",[[req URL] absoluteString]);
         
         if(options.data) {
@@ -1000,7 +1017,7 @@ dispatch_queue_t KKHttpIODispatchQueue() {
     static dispatch_queue_t v = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        v = dispatch_queue_create("com.kkmofang.KKHttp.IO", nil);
+        v = dispatch_queue_create("kk-io", nil);
     });
     return v;
 }
