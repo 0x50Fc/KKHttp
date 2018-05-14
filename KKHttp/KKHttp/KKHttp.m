@@ -20,32 +20,82 @@ NSString * KKHttpOptionsTypeImage = @"image";
 NSString * KKHttpOptionsGET = @"GET";
 NSString * KKHttpOptionsPOST = @"POST";
 
-@interface UIImage(KKHttp)
+@interface KKHttpImage : NSObject
 
-+(UIImage *) kk_imageWithPath:(NSString *) path;
+@property(nonatomic,weak) UIImage * image;
+
+@end
+
+@implementation KKHttpImage
 
 @end
 
 @implementation UIImage(KKHttp)
 
 +(UIImage *) kk_imageWithPath:(NSString *) path {
-    UIImage * image = [UIImage imageNamed:path];
+    
+    if(path == nil) {
+        return nil;
+    }
+    
+    NSString * main = [[NSBundle mainBundle] resourcePath];
+    
+    if(![main hasSuffix:@"/"]) {
+        main = [main stringByAppendingString:@"/"];
+    }
+    
+    if([path hasPrefix:main]) {
+        return [UIImage imageNamed:[path substringFromIndex:[main length]]];
+    }
+    
+    static NSMutableDictionary * images = nil;
+    
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        images = [[NSMutableDictionary alloc] initWithCapacity:4];
+    });
+    
+    KKHttpImage * object = nil;
+    
+    @synchronized(images)  {
+        object = [images valueForKey:path];
+    }
+    
+    UIImage * image = object.image;
     
     if(image == nil) {
         
-        CGImageSourceRef source = CGImageSourceCreateWithURL((__bridge CFURLRef)[NSURL fileURLWithPath:path], nil);
+        image = [UIImage imageWithContentsOfFile:path];
         
-        if(source) {
+        if(image == nil) {
             
-            CGImageRef i = CGImageSourceCreateImageAtIndex(source, 0, nil);
+            CGImageSourceRef source = CGImageSourceCreateWithURL((__bridge CFURLRef)[NSURL fileURLWithPath:path], nil);
             
-            if(i) {
-                image = [UIImage imageWithCGImage:i];
+            if(source) {
                 
-                CFRelease(i);
+                CGImageRef i = CGImageSourceCreateImageAtIndex(source, 0, nil);
+                
+                if(i) {
+                    image = [UIImage imageWithCGImage:i];
+                    CFRelease(i);
+                }
+                
+                CFRelease(source);
             }
             
-            CFRelease(source);
+        }
+    }
+
+    @synchronized(images)  {
+        if(image == nil) {
+            [images removeObjectForKey:path];
+        } else if(object){
+            object.image = image;
+            images[path] = object;
+        } else {
+            object = [[KKHttpImage alloc] init];
+            object.image = image;
+            images[path] = object;
         }
     }
     
@@ -242,7 +292,7 @@ NSString * KKHttpOptionsPOST = @"POST";
         
         return CFBridgingRelease(v);
     }
-    
+
 @end
 
 @interface KKHttpBodyItem : NSObject {
