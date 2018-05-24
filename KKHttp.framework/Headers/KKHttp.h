@@ -24,6 +24,12 @@ typedef void (^KKHttpOnFail)(NSError * error, id weakObject);
 typedef void (^KKHttpOnResponse)(NSHTTPURLResponse * response, id weakObject);
 typedef void (^KKHttpOnProcess)(long long value, long long maxValue,id weakObject);
 
+@interface UIImage(KKHttp)
+
++(UIImage *) kk_imageWithPath:(NSString *) path;
+
+@end
+
 @interface KKHttpOptions : NSObject {
     
 }
