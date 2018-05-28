@@ -67,7 +67,12 @@
                 NSArray * arguments = @[[JSValue valueWithNullInContext:onload.context],[error localizedDescription]];
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    [onload callWithArguments:arguments];
+                    @try{
+                        [onload callWithArguments:arguments];
+                    }
+                    @catch(NSException * ex) {
+                        NSLog(@"[KK] %@",ex);
+                    }
                 });
                 
                 
@@ -76,7 +81,12 @@
                 NSArray * arguments = @[data];
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    [onload callWithArguments:arguments];
+                    @try{
+                        [onload callWithArguments:arguments];
+                    }
+                    @catch(NSException * ex) {
+                        NSLog(@"[KK] %@",ex);
+                    }
                 });
             }
         };
@@ -87,7 +97,12 @@
         opt.onfail = ^(NSError *error, id weakObject) {
             NSArray * arguments = @[[error localizedDescription]];
             dispatch_async(dispatch_get_main_queue(), ^{
-                [onfail callWithArguments:arguments];
+                @try{
+                    [onfail callWithArguments:arguments];
+                }
+                @catch(NSException * ex) {
+                    NSLog(@"[KK] %@",ex);
+                }
             });
         };
     }
@@ -101,7 +116,12 @@
                 data[@"code"] = @(response.statusCode);
                 data[@"status"] = [NSHTTPURLResponse localizedStringForStatusCode:response.statusCode];
                 data[@"headers"] = [response allHeaderFields];
-                [onresponse callWithArguments:@[data]];
+                @try{
+                    [onresponse callWithArguments:@[data]];
+                }
+                @catch(NSException * ex) {
+                    NSLog(@"[KK] %@",ex);
+                }
             });
             
         };
