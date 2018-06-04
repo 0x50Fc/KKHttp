@@ -601,7 +601,13 @@ static NSString * KKHttpBodyUrlencodedType = @"application/x-www-form-urlencoded
                 _body = _path;
             }
             else if([_options.type isEqualToString:KKHttpOptionsTypeImage]) {
-                _body = [UIImage kk_imageWithPath:_path];
+                if([self.contentType containsString:@"image"]) {
+                    _body = [UIImage kk_imageWithPath:_path];
+                } else {
+                    _body = nil;
+                    _error = [NSError errorWithDomain:@"KKHttp" code:-300 userInfo:@{NSLocalizedDescriptionKey:@"错误的图片资源"}];
+                    [fm removeItemAtPath:_path error:nil];
+                }
             }
         } else if([_options.type isEqualToString:KKHttpOptionsTypeJSON]) {
             NSError * e = nil;
