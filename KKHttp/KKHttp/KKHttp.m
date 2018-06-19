@@ -710,7 +710,7 @@ static NSString * KKHttpBodyUrlencodedType = @"application/x-www-form-urlencoded
                 __weak id vObject = weakObject;
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    options.onfail([NSError errorWithDomain:@"KKHttp" code:-300 userInfo:@{NSLocalizedDescriptionKey:options.absoluteUrl}], vObject);
+                    options.onfail([NSError errorWithDomain:@"KKHttp" code:-300 userInfo:@{NSLocalizedDescriptionKey:@"错误的URL"}], vObject);
                 });
             }
             
