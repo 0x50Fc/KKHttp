@@ -66,28 +66,25 @@
                 
                 NSArray * arguments = @[[JSValue valueWithNullInContext:onload.context],[error localizedDescription]];
                 
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    @try{
-                        [onload callWithArguments:arguments];
-                    }
-                    @catch(NSException * ex) {
-                        NSLog(@"[KK] %@",ex);
-                    }
-                });
+                @try{
+                    [onload callWithArguments:arguments];
+                }
+                @catch(NSException * ex) {
+                    NSLog(@"[KK] %@",ex);
+                }
                 
                 
             } else {
                 
                 NSArray * arguments = @[data];
                 
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    @try{
-                        [onload callWithArguments:arguments];
-                    }
-                    @catch(NSException * ex) {
-                        NSLog(@"[KK] %@",ex);
-                    }
-                });
+                @try{
+                    [onload callWithArguments:arguments];
+                }
+                @catch(NSException * ex) {
+                    NSLog(@"[KK] %@",ex);
+                }
+                
             }
         };
     
@@ -96,14 +93,12 @@
     if([onfail isObject]) {
         opt.onfail = ^(NSError *error, id weakObject) {
             NSArray * arguments = @[[error localizedDescription]];
-            dispatch_async(dispatch_get_main_queue(), ^{
-                @try{
-                    [onfail callWithArguments:arguments];
-                }
-                @catch(NSException * ex) {
-                    NSLog(@"[KK] %@",ex);
-                }
-            });
+            @try{
+                [onfail callWithArguments:arguments];
+            }
+            @catch(NSException * ex) {
+                NSLog(@"[KK] %@",ex);
+            }
         };
     }
     
@@ -111,18 +106,16 @@
         
         opt.onresponse = ^(NSHTTPURLResponse *response, id weakObject) {
             
-            dispatch_async(dispatch_get_main_queue(), ^{
-                NSMutableDictionary * data = [NSMutableDictionary dictionaryWithCapacity:4];
-                data[@"code"] = @(response.statusCode);
-                data[@"status"] = [NSHTTPURLResponse localizedStringForStatusCode:response.statusCode];
-                data[@"headers"] = [response allHeaderFields];
-                @try{
-                    [onresponse callWithArguments:@[data]];
-                }
-                @catch(NSException * ex) {
-                    NSLog(@"[KK] %@",ex);
-                }
-            });
+            NSMutableDictionary * data = [NSMutableDictionary dictionaryWithCapacity:4];
+            data[@"code"] = @(response.statusCode);
+            data[@"status"] = [NSHTTPURLResponse localizedStringForStatusCode:response.statusCode];
+            data[@"headers"] = [response allHeaderFields];
+            @try{
+                [onresponse callWithArguments:@[data]];
+            }
+            @catch(NSException * ex) {
+                NSLog(@"[KK] %@",ex);
+            }
             
         };
     }
