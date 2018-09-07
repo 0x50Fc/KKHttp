@@ -53,7 +53,6 @@
     }
     opt.data = [[options valueForProperty:@"data"] toDictionary];
     opt.timeout = [[options valueForProperty:@"timeout"] toDouble];
-    opt.host = [KKJSHttp kk_getString:options key:@"host"];
     
     __strong JSValue * onload = [options valueForProperty:@"onload"];
     __strong JSValue * onfail = [options valueForProperty:@"onfail"];

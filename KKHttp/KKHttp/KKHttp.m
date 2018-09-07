@@ -255,13 +255,17 @@ NSString * KKHttpOptionsPOST = @"POST";
                 }
             }
             
-            if([self.type isEqualToString:KKHttpOptionsTypeURI] || [self.type isEqualToString:KKHttpOptionsTypeImage]) {
-                NSString * path = [KKHttpOptions cacheTmpPathWithURL:self.absoluteUrl];
-                NSFileManager * fm = [NSFileManager defaultManager];
-                if([fm fileExistsAtPath:path]) {
-                    NSDictionary * attrs = [fm attributesOfItemAtPath:path error:nil];
-                    [req setValue:[NSString stringWithFormat:@"%llu-",[attrs fileSize]] forHTTPHeaderField:@"Range"];
+            if([self.type isEqualToString:KKHttpOptionsTypeURI]
+               || [self.type isEqualToString:KKHttpOptionsTypeImage]) {
+                
+                if(_filePath != nil) {
+                    NSFileManager * fm = [NSFileManager defaultManager];
+                    if([fm fileExistsAtPath:_filePath]) {
+                        NSDictionary * attrs = [fm attributesOfItemAtPath:_filePath error:nil];
+                        [req setValue:[NSString stringWithFormat:@"%llu-",[attrs fileSize]] forHTTPHeaderField:@"Range"];
+                    }
                 }
+                
             }
             
             return req;
@@ -530,8 +534,13 @@ static NSString * KKHttpBodyUrlencodedType = @"application/x-www-form-urlencoded
             _encoding = NSUTF8StringEncoding;
             
             if(_key != nil) {
-                _path = [KKHttpOptions cachePathWithURL:options.absoluteUrl];
-                _tmppath = [KKHttpOptions cacheTmpPathWithURL:options.absoluteUrl];
+                if(options.filePath != nil) {
+                    _path = options.filePath;
+                    _tmppath = options.filePath;
+                } else {
+                    _path = [KKHttpOptions cachePathWithURL:options.absoluteUrl];
+                    _tmppath = [KKHttpOptions cacheTmpPathWithURL:options.absoluteUrl];
+                }
             }
         }
         return self;
@@ -543,7 +552,9 @@ static NSString * KKHttpBodyUrlencodedType = @"application/x-www-form-urlencoded
         if([self.contentType containsString:@"charset=gbk"] || [self.contentType containsString:@"charset=gb2312"]) {
             _encoding = CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingGBK_95);
         }
+        
         if(_key != nil) {
+            
             NSFileManager * fm = [NSFileManager defaultManager];
             
             if(![fm fileExistsAtPath:_tmppath]) {
@@ -582,18 +593,23 @@ static NSString * KKHttpBodyUrlencodedType = @"application/x-www-form-urlencoded
     
     -(void) onFail:(NSError *) error {
         if(_key != nil) {
-            NSFileManager * fm = [NSFileManager defaultManager];
-            [fm removeItemAtPath:_tmppath error:nil];
+            if(_tmppath != _path) {
+                NSFileManager * fm = [NSFileManager defaultManager];
+                [fm removeItemAtPath:_tmppath error:nil];
+            }
         }
     }
     
     -(void) onLoad {
         if(_key != nil) {
+            
             NSFileManager * fm = [NSFileManager defaultManager];
             NSError * e = nil;
             
-            [fm removeItemAtPath:_path error:nil];
-            [fm moveItemAtPath:_tmppath toPath:_path error:nil];
+            if(_path != _tmppath) {
+                [fm removeItemAtPath:_path error:nil];
+                [fm moveItemAtPath:_tmppath toPath:_path error:nil];
+            }
             
             _error = e;
             
@@ -609,6 +625,7 @@ static NSString * KKHttpBodyUrlencodedType = @"application/x-www-form-urlencoded
                     [fm removeItemAtPath:_path error:nil];
                 }
             }
+            
         } else if([_options.type isEqualToString:KKHttpOptionsTypeJSON]) {
             NSError * e = nil;
             _body = [NSJSONSerialization JSONObjectWithData:_data options:NSJSONReadingMutableLeaves error:&e];
