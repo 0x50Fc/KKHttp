@@ -871,6 +871,22 @@ static NSString * KKHttpBodyUrlencodedType = @"application/x-www-form-urlencoded
 willPerformHTTPRedirection:(NSHTTPURLResponse *)response
             newRequest:(NSURLRequest *)request
      completionHandler:(void (^)(NSURLRequest * _Nullable))completionHandler {
+        
+        NSNumber * identity = [NSNumber numberWithUnsignedInteger:task.taskIdentifier];
+        
+        NSMutableArray * tasks = [self.tasksWithIdentity objectForKey:identity];
+        
+        for(KKHttpTask * task in tasks) {
+            
+            if(task.options.onredirect != nil) {
+                if(task.options.onredirect((NSHTTPURLResponse *) response, task.weakObject) == NO) {
+                    completionHandler(nil);
+                    return;
+                }
+            }
+            
+        }
+        
         completionHandler(request);
     }
     

@@ -23,6 +23,7 @@ typedef void (^KKHttpOnLoad)(id data,NSError * error, id weakObject);
 typedef void (^KKHttpOnFail)(NSError * error, id weakObject);
 typedef void (^KKHttpOnResponse)(NSHTTPURLResponse * response, id weakObject);
 typedef void (^KKHttpOnProcess)(long long value, long long maxValue,id weakObject);
+typedef BOOL (^KKHttpOnRedirect)(NSHTTPURLResponse * response,id weakObject);
 
 @interface UIImage(KKHttp)
 
@@ -40,12 +41,13 @@ typedef void (^KKHttpOnProcess)(long long value, long long maxValue,id weakObjec
 @property(nonatomic,strong) NSMutableDictionary * headers;
 @property(nonatomic,strong) NSString * type;
 @property(nonatomic,assign) NSTimeInterval timeout;
-@property(nonatomic,strong) NSString * host;    //代理主机
+@property(nonatomic,strong) NSString * filePath; //文件下载路径 支持断点续传
 
 @property(nonatomic,copy) KKHttpOnLoad onload;
 @property(nonatomic,copy) KKHttpOnFail onfail;
 @property(nonatomic,copy) KKHttpOnResponse onresponse;
 @property(nonatomic,copy) KKHttpOnProcess onprocess;
+@property(nonatomic,copy) KKHttpOnRedirect onredirect;
 
 @property(nonatomic,strong,readonly) NSString * absoluteUrl;
 @property(nonatomic,strong,readonly) NSString * key;
