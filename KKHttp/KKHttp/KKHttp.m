@@ -128,6 +128,12 @@ NSString * KKHttpOptionsPOST = @"POST";
     }
     
     +(NSString *) pathWithURI:(NSString *) uri {
+        if([self respondsToSelector:@selector(KKHttpOptionsPathWithURI:)]) {
+            NSString * v = [self KKHttpOptionsPathWithURI:uri];
+            if(v != nil) {
+                return v;
+            }
+        }
         if([uri hasPrefix:@"document://"]) {
             return [NSHomeDirectory() stringByAppendingPathComponent:[uri substringFromIndex:11]];
         } else if([uri hasPrefix:@"app://"]) {

@@ -31,7 +31,15 @@ typedef BOOL (^KKHttpOnRedirect)(NSHTTPURLResponse * response,id weakObject);
 
 @end
 
-@interface KKHttpOptions : NSObject {
+@protocol KKHttpOptions
+
+@optional
+
++(NSString *) KKHttpOptionsPathWithURI:(NSString *) uri;
+
+@end
+
+@interface KKHttpOptions : NSObject<KKHttpOptions> {
     
 }
     
